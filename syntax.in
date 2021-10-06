@@ -1,0 +1,17 @@
+program = "f" "int" "main" "(" ")" "#" statement "ret" intconst "#"
+statement = decl | write | read | loop | check | assign | compoundstmt
+compoundstmt = statement ";" statement 
+decl = "let" type (declaree) {","(declaree)}
+declaree = identifier["[" intconst "]"]  | identifier[<- (intconst | strconst)]
+type = "int" | "char"
+write = "write" "(" printable ")"
+printable = strconst | intconst | identifier | expression | printable printable
+read = "read" "(" identifier["[" expression "]"] ")"
+loop = ("for" "(" ( assign | decl ) "|" expression "|" assign ")" "#" statement "#") | ("while" "(" expression ")" "#" statement "#")
+check = "check" "(" expression ")" "#" statement "#" {"else" "check" "(" expression ")" "#" statement "#"}
+assign = identifier["[" expression "]"] ("<-" | "-<-" | "+<-") expression
+expression = expression ("+"|"-"|"or") term | term
+term = term ("*"|"/"|"%","and") factor | factor
+factor = "(" expression ")" | relational | identifier["[" expression "]"] | intconst | strconst
+relational = expression comp expression
+comp = "<" | "<=" | "=" | ">=" | ">"

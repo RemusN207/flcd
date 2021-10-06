@@ -1,0 +1,32 @@
+Alphabet:
+
+a. Upper (A-Z) and lower case letters (a-z) of the English alphabet
+
+b. Underline character '_';
+
+c. Decimal digits (0-9);
+
+
+Lexic:
+
+a. Special symbols, representing:
+	- operators: <- + +<- - -<- < <= = > >= / % $
+	- separators: | ( ) [ ] # ... ; ,
+	- reserved words: let int char read check write for ret else const while
+b. Identifiers
+	- a seq. of letters that can end with digits such that the first character is always a letter
+		identifier = {"_"}(letter | letter{letter}{digit})
+		letter = "A"|"B"|...|"Z"|"a"|"b"|...|"z"
+		digit = "0"|"1"|...|"9"
+c. Constants
+	1. integer
+		intconst = ["-"|"+"]no | "0"
+		no = digit1{digit}
+		digit1 = "1"|"2"|...|"9"
+	2. character
+		character = 'letter'|'digit'
+	3. string 
+		strconst = "string"
+		string = char{string}
+		char = letter|digit|"_"
+ 	
