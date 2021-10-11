@@ -27,6 +27,7 @@ read
 write
 if
 then
+else
 for
 while
 do

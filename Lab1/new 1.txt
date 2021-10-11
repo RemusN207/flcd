@@ -13,9 +13,9 @@
 		i = i + 1;
 	};
 	if (prime) then {
-		rite("prime")
+		write("prime");
 	} else {
-		write("notPrime")
+		write("notPrime");
 	};
 #
 
@@ -69,8 +69,8 @@
 		i = i + 1;
 	};
 	if (1sPrime) then {
-		write("prime)
+		write("prime);
 	} else {
-		write("notPrime")
+		write("notPrime");
 	};
 #

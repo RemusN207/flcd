@@ -16,7 +16,7 @@ Lexic:
 			() [] {} , ; 
 
 		- reserved words:
-			let bool int string read write if then for while do true false
+			let bool int string read write if then else for while do true false
 			
 	b.identifiers
 
