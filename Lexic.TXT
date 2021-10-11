@@ -15,7 +15,7 @@ a. Special symbols, representing:
 	- reserved words: let int char read check write for ret else const while
 b. Identifiers
 	- a seq. of letters that can end with digits such that the first character is always a letter
-		identifier = {"_"}(letter | letter{letter}{digit})
+		identifier = {"_"}letter{letter}{digit}
 		letter = "A"|"B"|...|"Z"|"a"|"b"|...|"z"
 		digit = "0"|"1"|...|"9"
 c. Constants
