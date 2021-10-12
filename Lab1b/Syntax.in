@@ -12,11 +12,10 @@ type = ("int" | "bool" | "string")
 assignmentStatement = address "=" expression
 address = identifier | address "[" expression "]"
 
-expression = listExpression | "not" "(" expression ")" | expression ("+" | "-" | "or") term | term
+expression = listExpression | expression ("+" | "-" | "or") term | term
 listExpression = "{" "}" | "{" expression {"," expression} "}"
 term = term ("*" | "/" | "%" | "and") factor | factor
-factor = "(" expression ")"  | relational | address | constant
-relational = expression comparator expression
+factor = "not" factor | "(" expression ")"  | relational | address | constant
 comparator = "<" | "<=" | "==" | "!=" | ">=" | ">"
 constant = integer | boolean | string
 
