@@ -10,7 +10,7 @@ Lexic:
 	a.Special symbols, representing:
 
 		- operators
-			+ - * / = < <= == >= and or
+			+ - * / = < <= != == >= and or not
 
 		- separators
 			() [] {} , ; 
