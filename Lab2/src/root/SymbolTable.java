@@ -15,26 +15,22 @@ public class SymbolTable {
             maxIndex += 1;
         }
         Node current = head;
-        boolean finished = false;
-        while (!finished) {
-            if (value.equals(current.value))
-                return current.index;
-            if (value.compareTo(current.value) < 0)
+        while (!value.equals(current.value)) {
+            if (value.compareTo(current.value) < 0) {
                 if (current.left == null) {
                     current.left = new Node(value, maxIndex);
-                    finished = true;
+                    maxIndex += 1;
                 }
-                else
-                    current = current.left;
-            else
+                current = current.left;
+            }
+            if (value.compareTo(current.value) > 0) {
                 if (current.right == null) {
-                    current.left = new Node(value, maxIndex);
-                    finished = true;
+                    current.right = new Node(value, maxIndex);
+                    maxIndex += 1;
                 }
-                else
-                    current = current.right;
+                current = current.right;
+            }
         }
-        maxIndex += 1;
-        return maxIndex - 1;
+        return current.index;
     }
 }
