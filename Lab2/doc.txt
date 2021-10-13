@@ -1,0 +1,5 @@
+SymbolTable:
+- BST structure for symbol table;
+    methods: int getIndex(String value)
+        - args: value = identifier to be stored
+        - returns: index at which value was stored (or had been previously stored)
