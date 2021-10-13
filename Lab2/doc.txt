@@ -7,7 +7,8 @@ SymbolTable:
         index, of type int;
         left, right of type Node;
     methods: int getIndex(String value)
-            verifies whether value has already been added;
-            adds Node whenever value does not exist, then returns index of stored Node;
+            verifies whether Node exists with given value;
+            whenever value does not exist, adds Node, then returns index of new Node;
+            whenever value does exist, return index of existing Node;
         - args: value = identifier to be stored
         - returns: index at which value was stored (or had been previously stored)
