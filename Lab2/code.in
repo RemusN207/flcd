@@ -6,7 +6,7 @@
 	let bool prime;
 	prime = false;
 	while (i < a/2) do {
-		if (a % i == 0) then
+		if (a % i ==((0+0)*1) then
 			prime = true;
 		i = i + 1;
 	};

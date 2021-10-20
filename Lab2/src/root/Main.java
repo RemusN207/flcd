@@ -20,11 +20,25 @@ public class Main {
         PrintWriter slOut = new PrintWriter("sl.out");
 
         List<String> tokens = new ArrayList<>();
+        List<String> specialTokens = new ArrayList<>();
+        Pattern regexExceptions = Pattern.compile("[.^$*+?()\\[{\\\\|]");
         while (tokenInput.hasNext()) {
-            tokens.add(tokenInput.nextLine());
+            String token = tokenInput.nextLine().trim();
+            if(Pattern.compile("[^a-zA-Z0-9_\"\\s]{2,}").matcher(token).matches()) {
+                StringBuilder specialToken = new StringBuilder();
+                for (char chr : token.toCharArray()) {
+                    if (regexExceptions.matcher(String.valueOf(chr)).matches())
+                        specialToken.append("\\");
+                    specialToken.append(chr);
+                }
+                specialTokens.add(specialToken.toString());
+            }
+            tokens.add(token);
         }
-
-        Pattern tokenizer = Pattern.compile("\\s*[a-zA-Z0-9_\"]+\\s*|\\s*[^a-zA-Z0-9_\";\\s]+\\s*|\\s*;+\\s*");
+        String specialTokenRegex = specialTokens.stream().reduce("", (string, token) -> token + "|" + string);
+        String tokenRegex = "\\s*[a-zA-Z0-9_\"]+\\s*|\\s*(" + specialTokenRegex + "[^a-zA-Z0-9_\"\\s])\\s*";
+        System.out.println(tokenRegex);
+        Pattern tokenizer = Pattern.compile(tokenRegex);
         int lineNo = 1;
         StringBuilder errors = new StringBuilder();
         while (codeFile.hasNext()) {
