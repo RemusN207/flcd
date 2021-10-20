@@ -14,6 +14,10 @@ public class Node {
 
     @Override
     public String toString() {
-        return (left != null ? left.toString() : "") + index + ", " + value + "\n" + (right != null ? right.toString() : "");
+        return toStringHelper("");
+    }
+
+    public String toStringHelper(String prefix) {
+        return (left != null ? left.toStringHelper(prefix + "\t") : "") + prefix + index + ", " + value + "\n" + (right != null ? right.toStringHelper(prefix + "\t") : "");
     }
 }
