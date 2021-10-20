@@ -15,7 +15,7 @@ address = identifier | address "[" expression "]"
 expression = listExpression | expression ("+" | "-" | "or") term | term
 listExpression = "{" "}" | "{" expression {"," expression} "}"
 term = term ("*" | "/" | "%" | "and") factor | factor
-factor = "not" factor | "(" expression ")"  | relational | address | constant
+factor = "-" factor | "not" factor | "(" expression ")"  | relational | address | constant
 relational = expression comparator expression
 comparator = "<" | "<=" | "==" | "!=" | ">=" | ">"
 constant = integer | boolean | string

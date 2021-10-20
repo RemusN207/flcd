@@ -1,0 +1,18 @@
+#
+	let int a;
+	read(a);
+	let int i = -1;
+	i = 2;
+	let bool prime;
+	prime = false;
+	while (i < a/2) do {
+		if (a % i == 0) then
+			prime = true;
+		i = i + 1;
+	};
+	if (prime) then {
+		write("prime");
+	} else {
+		write("notPrime");
+	};
+#

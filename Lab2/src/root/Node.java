@@ -11,4 +11,9 @@ public class Node {
         left = null;
         right = null;
     }
+
+    @Override
+    public String toString() {
+        return (left != null ? left.toString() : "") + index + ", " + value + "\n" + (right != null ? right.toString() : "");
+    }
 }

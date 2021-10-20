@@ -1,0 +1,14 @@
+Lexical analyzer
+input:
+    - token.in - all reserved words, operators, and separators;
+    - code.in - code to be analyzed;
+output:
+    - stdout - lexical errors or lack thereof;
+    - pif.out - program internal form, if execution succeeds;
+    - sl.out - symbol table, if execution succeeds;
+
+tokenizes code input, then for each token:
+    - if reserved word, operator, or separator, adds entry to pif;
+    - if valid identifier or constant, adds entries to sl and pif;
+    - otherwise, prints error;
+if no errors occur, write sl and pif in output files;

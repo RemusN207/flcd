@@ -33,4 +33,9 @@ public class SymbolTable {
         }
         return current.index;
     }
+
+    @Override
+    public String toString() {
+        return "SL (BST):\n" + head.toString();
+    }
 }
