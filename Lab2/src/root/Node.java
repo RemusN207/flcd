@@ -18,6 +18,6 @@ public class Node {
     }
 
     public String toStringHelper(String prefix) {
-        return (left != null ? left.toStringHelper(prefix + "\t") : "") + prefix + index + ", " + value + "\n" + (right != null ? right.toStringHelper(prefix + "\t") : "");
+        return (left != null ? left.toStringHelper(prefix + "\t") : "") + prefix + index + " -> " + value + "\n" + (right != null ? right.toStringHelper(prefix + "\t") : "");
     }
 }

@@ -21,7 +21,7 @@ public class Main {
 
         List<String> tokens = new ArrayList<>();
         List<String> specialTokens = new ArrayList<>();
-        Pattern regexExceptions = Pattern.compile("[.^$*+?()\\[{\\\\|]");
+        Pattern regexExceptions = Pattern.compile("[.^$*+?()\\[{}\\]\\\\|]");
         while (tokenInput.hasNext()) {
             String token = tokenInput.nextLine().trim();
             if(Pattern.compile("[^a-zA-Z0-9_\"\\s]{2,}").matcher(token).matches()) {
