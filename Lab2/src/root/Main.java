@@ -68,12 +68,10 @@ public class Main {
         slOut.close();
     }
 
-    public static String IsSymbol(String token) {
-        Matcher identifier = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*").matcher(token);
-        Matcher constant = Pattern.compile("0|[1-9][0-9]*|\"[a-zA-Z0-9_]*\"").matcher(token);
-        if(identifier.matches())
+    public static String IsSymbol(String token) throws FileNotFoundException {
+        if(FA.readFromFile("dfaidentifier.in").validate(token))
             return "identifier";
-        if(constant.matches())
+        if(FA.readFromFile("dfaconstant.in").validate(token))
             return "constant";
         return "none";
     }

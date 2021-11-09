@@ -1,0 +1,23 @@
+https://github.com/RemusN207/flcd
+finite automaton model which:
+    -provides a cli for:
+        -displaying info about the automaton
+        -checking if a sequence is accepted by the automaton (DFA only)
+    -read automaton info from file:
+        -input must follow specification:
+            input = stateDef initialDef alphabetDef transitionDef finalDef
+            stateDef = "state" stateList
+            stateList = state | state "," stateList
+            state = upperCase | upperCase state
+            initialDef = "initial" state
+            alphabetDet = "alphabet" characterList
+            characterList = character | character "," characterList
+            transitionDef = "transition" transitionList
+            transitionList = transition | transition transitionList
+            transition = state "," state "-" characterList
+            finalDel = "final" stateList
+            character = lowerCase | upperCase | digit | special
+            lowerCase = "a", "b", ..., "z"
+            upperCase = "A", "B", ..., "Z"
+            digit = "0", "1", ..., "9"
+            special = "_" | """
