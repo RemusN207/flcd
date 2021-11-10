@@ -5,8 +5,8 @@ P
 alphabet
 0,1
 transition
-P,P - 0
-P,Q - 1
-Q,Q - 1
+P,P = 0
+P,Q = 1
+Q,Q = 1
 final
 Q

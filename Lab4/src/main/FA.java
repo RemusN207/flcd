@@ -20,8 +20,8 @@ public class FA {
             case "final" -> finalStates.addAll(Stream.of(line.split(",")).map(String::trim).toList());
             case "alphabet" -> alphabet.addAll(Stream.of(line.split(",")).map(String::trim).map(s -> s.charAt(0)).toList());
             case "transition" -> {
-                String states = line.split("-")[0].trim();
-                String symbols = line.split("-")[1].trim();
+                String states = line.split("=")[0].trim();
+                String symbols = line.split("=")[1].trim();
                 transitions.put(
                         new AbstractMap.SimpleEntry<>(states.split(",")[0].trim(), states.split(",")[1].trim()),
                         Stream.of(symbols.split(",")).map(String::trim).map(s -> s.charAt(0)).toList()
