@@ -1,0 +1,6 @@
+terminal
+a, b, c
+nonTerminal
+S
+production
+S -> aSbS | c
