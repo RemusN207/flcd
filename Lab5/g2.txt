@@ -37,7 +37,7 @@ ioStatement -> readStatement | writeStatement
 readStatement -> read ( address )
 writeStatement -> write ( expression )
 ifStatement -> if ( expression ) then { compoundStatement } elseBlock
-elseBlock = else { compoundStatement } | eps
+elseBlock -> else { compoundStatement } | eps
 loopStatement -> whileStatement | forStatement
 forStatement -> for ( assignmentStatement ; expression ; assignmentStatement ) do { compoundStatement }
 whileStatement -> while ( expression ) do { compoundStatement }

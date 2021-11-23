@@ -22,7 +22,7 @@ public class Grammar {
             case "production" -> {
                 String leftSide = line.split("->")[0].trim();
                 if (!symbols.contains(new NonTerminal(leftSide))) {
-                    System.out.println("NON CFG");
+                    System.out.println("NON CFG: " + leftSide);
                     break;
                 }
                 String rightSide = line.split("->")[1].trim();
@@ -66,5 +66,43 @@ public class Grammar {
                 default -> System.out.println("wrong command");
             }
         }
+    }
+
+    private static Set<Symbol> ConcatOfLen1(Set<Symbol> a, Set<Symbol> b){
+        if (b.isEmpty())
+            return Set.of();
+        return a.stream().flatMap(symbol -> {
+            if (symbol.equals(Symbol.epsilon))
+                return b.stream();
+            return Stream.of(symbol);
+        }).collect(Collectors.toSet());
+    }
+
+    public Map<Symbol, Set<Symbol>> generateFirst() {
+        Map<Symbol, Set<Symbol>> first = new HashMap<>();
+        symbols.forEach(symbol -> {
+            first.put(symbol, new HashSet<>());
+            if (symbol instanceof Terminal || symbol.equals(Symbol.epsilon))
+                first.get(symbol).add(symbol);
+        });
+        AtomicBoolean convergent = new AtomicBoolean(false);
+        while(!convergent.get()) {
+            convergent.set(true);
+            symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
+                    .forEach(symbol -> {
+                        int prevLen = first.get(symbol).size();
+                        first.get(symbol).addAll(
+                                productions.get(symbol).stream()
+                                        .flatMap(prod -> prod.stream()
+                                                .map(first::get)
+                                                .reduce(Grammar::ConcatOfLen1)
+                                                .get().stream()
+                                        ).collect(Collectors.toSet())
+                        );
+                        if (first.get(symbol).size() != prevLen)
+                            convergent.set(false);
+                    });
+        }
+        return first;
     }
 }
