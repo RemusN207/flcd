@@ -123,21 +123,21 @@ public class Grammar {
         while(!convergent.get()) {
             convergent.set(true);
             symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
-                    .forEach(B -> {
-                        int prevLen = follow.get(B).size();
+                    .forEach(symbol -> {
+                        int prevLen = follow.get(symbol).size();
                         productions.entrySet().stream().flatMap(productions ->
                                 productions.getValue().stream().map(production -> Map.entry(productions.getKey(), production)))
-                                .filter(production -> production.getValue().contains(B))
+                                .filter(production -> production.getValue().contains(symbol))
                                 .forEach(production -> IntStream.range(0, production.getValue().size())
-                                        .filter(index -> B.equals(production.getValue().get(index)))
+                                        .filter(index -> symbol.equals(production.getValue().get(index)))
                                         .forEach(index -> {
-                                            if(index == production.getValue().size() - 1 ||
+                                            if (index == production.getValue().size() - 1 ||
                                                     first.get(production.getValue().get(index + 1)).contains(Symbol.epsilon))
-                                                follow.get(B).addAll(follow.get(production.getKey()));
-                                            else
-                                                follow.get(B).addAll(first.get(production.getValue().get(index + 1)));
+                                                follow.get(symbol).addAll(follow.get(production.getKey()));
+                                            if (index < production.getValue().size() - 1)
+                                                follow.get(symbol).addAll(first.get(production.getValue().get(index + 1)));
                                         }));
-                        if (follow.get(B).size() != prevLen)
+                        if (follow.get(symbol).size() != prevLen)
                             convergent.set(false);
                     });
         }
