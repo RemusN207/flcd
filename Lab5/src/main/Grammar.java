@@ -5,11 +5,14 @@ import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Grammar {
     private final List<Symbol> symbols = new ArrayList<>();
     private final Map<Symbol, List<List<Symbol>>> productions = new HashMap<>();
+    private Map<Symbol, Set<Symbol>> first = null;
+    private Map<Symbol, Set<Symbol>> follow = null;
 
     private Symbol getSymbol(String content) {
         return symbols.get(symbols.indexOf(new Symbol(content)));
@@ -29,8 +32,8 @@ public class Grammar {
                 List<List<Symbol>> prods = Stream.of(rightSide.split("\\|"))
                         .map(String::trim).map(prod -> Stream.of(prod.split(" "))
                                 .map(this::getSymbol)
-                                .collect(Collectors.toList()))
-                        .collect(Collectors.toList());
+                                .toList())
+                        .toList();
                 productions.put(getSymbol(leftSide), prods);
             }
         }
@@ -103,6 +106,42 @@ public class Grammar {
                             convergent.set(false);
                     });
         }
+        this.first = first;
         return first;
+    }
+
+    public Map<Symbol, Set<Symbol>> generateFollow() {
+        if (first == null)
+            generateFirst();
+
+        Map<Symbol, Set<Symbol>> follow = new HashMap<>();
+        symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
+                .forEach(nonTerminal -> follow.put(nonTerminal, new HashSet<>()));
+        follow.get(symbols.stream().filter(symbol -> symbol instanceof  NonTerminal).findFirst().get()).add(Symbol.epsilon);
+
+        AtomicBoolean convergent = new AtomicBoolean(false);
+        while(!convergent.get()) {
+            convergent.set(true);
+            symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
+                    .forEach(B -> {
+                        int prevLen = follow.get(B).size();
+                        productions.entrySet().stream().flatMap(productions ->
+                                productions.getValue().stream().map(production -> Map.entry(productions.getKey(), production)))
+                                .filter(production -> production.getValue().contains(B))
+                                .forEach(production -> IntStream.range(0, production.getValue().size())
+                                        .filter(index -> B.equals(production.getValue().get(index)))
+                                        .forEach(index -> {
+                                            if(index == production.getValue().size() - 1 ||
+                                                    first.get(production.getValue().get(index + 1)).contains(Symbol.epsilon))
+                                                follow.get(B).addAll(follow.get(production.getKey()));
+                                            else
+                                                follow.get(B).addAll(first.get(production.getValue().get(index + 1)));
+                                        }));
+                        if (follow.get(B).size() != prevLen)
+                            convergent.set(false);
+                    });
+        }
+        this.follow = follow;
+        return follow;
     }
 }
