@@ -3,13 +3,17 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Grammar {
     private final List<Symbol> symbols = new ArrayList<>();
-    private final Map<Integer, List<List<Integer>>> productions = new HashMap<>();
+    private final Map<Symbol, List<List<Symbol>>> productions = new HashMap<>();
+
+    private Symbol getSymbol(String content) {
+        return symbols.get(symbols.indexOf(new Symbol(content)));
+    }
 
     private void readLine(String context, String line) {
         switch (context) {
@@ -22,29 +26,19 @@ public class Grammar {
                     break;
                 }
                 String rightSide = line.split("->")[1].trim();
-                List<List<Integer>> prods = Stream.of(rightSide.split("\\|")).map(String::trim).map(prod -> {
-                    AtomicReference<String> buffer = new AtomicReference<>("");
-                    List<Integer> result = new ArrayList<>();
-                    prod.chars().forEach(chr -> {
-                        buffer.set(buffer.get() + (char)chr);
-                        System.out.println(buffer.get());
-                        int index = symbols.indexOf(new Symbol(buffer.get()));
-                        if (index != -1) {
-                            buffer.set("");
-                            result.add(index);
-                        }
-                    });
-                    if (buffer.get().equals(""))
-                        return result;
-                    return new ArrayList<Integer>();
-                }).collect(Collectors.toList());
-                productions.put(symbols.indexOf(new NonTerminal(leftSide)), prods);
+                List<List<Symbol>> prods = Stream.of(rightSide.split("\\|"))
+                        .map(String::trim).map(prod -> Stream.of(prod.split(" "))
+                                .map(this::getSymbol)
+                                .collect(Collectors.toList()))
+                        .collect(Collectors.toList());
+                productions.put(getSymbol(leftSide), prods);
             }
         }
     }
 
     static public Grammar readFromFile(String filename) throws FileNotFoundException {
         Grammar grammar = new Grammar();
+        grammar.symbols.add(Symbol.epsilon);
         Scanner fileInput = new Scanner(new File(filename));
         String context = "";
         while (fileInput.hasNext()) {
@@ -65,7 +59,7 @@ public class Grammar {
                 case "terminal" -> System.out.println(symbols.stream().filter(s -> s instanceof Terminal).toList());
                 case "nonTerminal" -> System.out.println(symbols.stream().filter(s -> s instanceof NonTerminal).toList());
                 case "production" -> System.out.println(productions);
-                case "productionFor" -> System.out.println(productions.get(symbols.indexOf(new Symbol(commandArgs[1]))));
+                case "productionFor" -> System.out.println(productions.get(getSymbol(commandArgs[1])));
                 case "exit" -> {
                     return;
                 }

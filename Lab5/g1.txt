@@ -1,6 +1,10 @@
 terminal
-a, b, c
+a, *, +, (, )
 nonTerminal
-S
+S, A, B, C, D
 production
-S -> aSbS | c
+S -> B A
+A -> + B A | eps
+B -> D C
+C -> * D C | eps
+D -> ( S ) | a

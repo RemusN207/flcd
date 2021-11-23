@@ -3,6 +3,8 @@ package main;
 import java.util.Objects;
 
 public class Symbol {
+    static final Symbol epsilon = new Symbol("eps");
+    static final Symbol endSymbol = new Symbol("$");
     public final String info;
 
     protected Symbol(String info) {

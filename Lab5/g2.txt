@@ -1,19 +1,31 @@
+terminal
+#, ;, let, [, ], int, bool, string, =, identifier
++, -, or, *, /, %, and, not, (, ), constant
+<, <=, ==, !=, >=, >
+read, write
+if, then, else, {, }
+for, while, do
+nonTerminal
+program, statement, compoundStatement, optionalStatement
+declarationStatement, declaration, declaree, arraySizeDeclaration, type
+assignmentStatement, address, subscription
+expression, secondExpression, term, secondTerm, factor, relational, comparator
+ioStatement, readStatement, writeStatement
+ifStatement, elseBlock
+loopStatement, forStatement, whileStatement
+production
 program -> # compoundStatement #
-
 statement -> declarationStatement ; | assignmentStatement ;| ioStatement ; | ifStatement ; | loopStatement ;
 compoundStatement -> statement optionalStatement
 optionalStatement -> compoundStatement | eps
-
 declarationStatement -> let declaration
 declaration -> type declaree
 declaree -> identifier arraySizeDeclaration
 arraySizeDeclaration -> [ constant ] | eps
 type -> int | bool | string
-
 assignmentStatement -> address = expression
 address -> identifier subscription
 subscription -> [ expression ] | eps
-
 expression -> term secondExpression
 secondExpression -> + term secondExpression | - term secondExpression | or term secondExpression | eps
 term -> factor secondTerm
@@ -21,14 +33,11 @@ secondTerm -> * factor secondTerm | / factor secondTerm | % factor secondTerm | 
 factor -> - factor | not factor | ( expression )  | relational | address | constant
 relational -> [ expression comparator expression ]
 comparator -> < | <= | == | != | >= | >
-
 ioStatement -> readStatement | writeStatement
 readStatement -> read ( address )
 writeStatement -> write ( expression )
-
 ifStatement -> if ( expression ) then { compoundStatement } elseBlock
 elseBlock = else { compoundStatement } | eps
-
 loopStatement -> whileStatement | forStatement
 forStatement -> for ( assignmentStatement ; expression ; assignmentStatement ) do { compoundStatement }
 whileStatement -> while ( expression ) do { compoundStatement }
