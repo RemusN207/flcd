@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -13,6 +14,8 @@ public class Grammar {
     private final Map<Symbol, List<List<Symbol>>> productions = new HashMap<>();
     private Map<Symbol, Set<Symbol>> first = null;
     private Map<Symbol, Set<Symbol>> follow = null;
+    private Map<Map.Entry<Symbol, List<Symbol>>, Integer> productionIndexMap = null;
+    private Map<Map.Entry<Symbol, Symbol>, ParsingTableValue> parsingTable = null;
 
     private Symbol getSymbol(String content) {
         return symbols.get(symbols.indexOf(new Symbol(content)));
@@ -82,7 +85,7 @@ public class Grammar {
     }
 
     public Map<Symbol, Set<Symbol>> generateFirst() {
-        Map<Symbol, Set<Symbol>> first = new HashMap<>();
+        first = new HashMap<>();
         symbols.forEach(symbol -> {
             first.put(symbol, new HashSet<>());
             if (symbol instanceof Terminal || symbol.equals(Symbol.epsilon))
@@ -106,7 +109,6 @@ public class Grammar {
                             convergent.set(false);
                     });
         }
-        this.first = first;
         return first;
     }
 
@@ -114,7 +116,7 @@ public class Grammar {
         if (first == null)
             generateFirst();
 
-        Map<Symbol, Set<Symbol>> follow = new HashMap<>();
+        follow = new HashMap<>();
         symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
                 .forEach(nonTerminal -> follow.put(nonTerminal, new HashSet<>()));
         follow.get(symbols.stream().filter(symbol -> symbol instanceof  NonTerminal).findFirst().get()).add(Symbol.epsilon);
@@ -141,7 +143,60 @@ public class Grammar {
                             convergent.set(false);
                     });
         }
-        this.follow = follow;
         return follow;
+    }
+
+    private void generateProductionIndexes() {
+        productionIndexMap = new HashMap<>();
+        AtomicInteger productionIndex = new AtomicInteger(1);
+        productions.entrySet().stream()
+                .flatMap(productions -> productions.getValue().stream()
+                        .map(production -> Map.entry(productions.getKey(), production)))
+                .forEach(production -> {
+                    System.out.println(productionIndex + ": " + production);
+                    productionIndexMap.put(production, productionIndex.get());
+                    productionIndex.addAndGet(1);
+                });
+    }
+
+    private void putInParsingTable(Symbol symbol1, Symbol symbol2, ParsingTableValue tableValue) {
+        if (parsingTable.containsKey(Map.entry(symbol1, symbol2))
+                && !parsingTable.get(Map.entry(symbol1, symbol2)).equals(tableValue))
+            System.out.println("COLLISION!");
+        parsingTable.put(Map.entry(symbol1, symbol2), tableValue);
+    }
+
+    public Map<Map.Entry<Symbol, Symbol>, ParsingTableValue> generateTable() {
+        if (follow == null)
+            generateFollow();
+        if (productionIndexMap == null)
+            generateProductionIndexes();
+
+        parsingTable = new HashMap<>();
+        productions.entrySet().stream()
+                .flatMap(productions -> productions.getValue().stream()
+                        .map(production -> Map.entry(productions.getKey(), production)))
+                .forEach(production -> {
+                    production.getValue().stream()
+                            .map(symbol -> first.get(symbol))
+                            .reduce(Grammar::ConcatOfLen1).get()
+                            .forEach(a -> {
+                                if (!a.equals(Symbol.epsilon)) {
+                                    putInParsingTable(production.getKey(), a, new ParsingTableValue(production.getValue(), productionIndexMap.get(production)));
+                                } else {
+                                    follow.get(production.getKey())
+                                            .forEach(b -> {
+                                                b = b.equals(Symbol.epsilon) ? Symbol.endSymbol : b;
+                                                putInParsingTable(production.getKey(), b, new ParsingTableValue(production.getValue(), productionIndexMap.get(production)));
+                                            });
+                                }
+                            });
+                });
+        symbols.stream()
+                .filter(symbol -> symbol instanceof Terminal)
+                .forEach(terminal -> putInParsingTable(terminal, terminal, ParsingTableValue.pop));
+        putInParsingTable(Symbol.endSymbol, Symbol.endSymbol, ParsingTableValue.acc);
+
+        return parsingTable;
     }
 }
