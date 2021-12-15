@@ -19,21 +19,13 @@ public class Main {
         return symbols;
     }
     public static void main(String[] args) throws IOException {
-        Grammar g = Grammar.readFromFile("g2.txt");
-
-
-        //ParseInputFile("PIF.out");
-        //ParseInputFile("seq.out");
-        BufferedWriter fileOutput = new BufferedWriter(new FileWriter("out2.txt"));
-
+        Grammar g = Grammar.readFromFile("g1.txt");
+        BufferedWriter fileOutput = new BufferedWriter(new FileWriter("out1.txt"));
+        fileOutput.write(g.parseInput(ParseInputFile("seq.txt")).toString());
+        fileOutput.flush();
+        g = Grammar.readFromFile("g2.txt");
+        fileOutput = new BufferedWriter(new FileWriter("out2.txt"));
         fileOutput.write(g.parseInput(ParseInputFile("PIF.out")).toString());
         fileOutput.flush();
-
-        //System.out.println(g.parseInput(ParseInputFile("seq.txt")));
-        //System.out.println();
-        /*var p = new ParsingOutput();
-        p.addEntry(new ParsingOutputEntry(new Terminal("A"), -1, -1));
-        p.addEntry(new ParsingOutputEntry(new Terminal("B"), 0, -1));
-        System.out.println(p);*/
     }
 }

@@ -6,6 +6,7 @@ public class ParsingOutputEntry {
     public final int rightSiblingIndex;
 
     public ParsingOutputEntry(Symbol symbol, int parentIndex, int rightSiblingIndex) {
+        symbol = symbol.equals(Symbol.endSymbol) ? Symbol.epsilon : symbol;
         this.symbol = symbol;
         this.parentIndex = parentIndex;
         this.rightSiblingIndex = rightSiblingIndex;

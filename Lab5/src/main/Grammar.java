@@ -196,7 +196,7 @@ public class Grammar {
                             });
                 });
         symbols.stream()
-                .filter(symbol -> symbol instanceof Terminal)
+                .filter(symbol -> symbol instanceof Terminal || symbol.equals(Symbol.epsilon))
                 .forEach(terminal -> putInParsingTable(terminal, terminal, ParsingTableValue.pop));
         putInParsingTable(Symbol.endSymbol, Symbol.endSymbol, ParsingTableValue.acc);
 
@@ -215,14 +215,11 @@ public class Grammar {
         int workingOutputIndex = 0;
 
         while (true) {
-            System.out.println(inputStack);
-            System.out.println(workingStack);
-            var key = Map.entry(workingStack.get(0), inputStack.get(0));
-            var opt = parsingTable.keySet().stream()
-                    .filter(key2 -> key2.equals(key))
+            Optional<Map.Entry<Symbol, Symbol>> opt = parsingTable.keySet().stream()
+                    .filter(key2 -> key2.equals(Map.entry(workingStack.get(0), inputStack.get(0))))
                     .findFirst();
             if (opt.isEmpty()) {
-                System.out.println("error at " + key);
+                System.out.println("error at " + Map.entry(workingStack.get(0), inputStack.get(0)));
                 return null;
             }
             if (parsingTable.get(opt.get()).equals(ParsingTableValue.acc))
@@ -241,7 +238,9 @@ public class Grammar {
                     workingOutputIndex = output.getRightSiblingOf(workingOutputIndex);
                 continue;
             }
-            List<Symbol> expanse = parsingTable.get(opt.get()).production.stream().filter(symbol -> !symbol.equals(Symbol.epsilon)).toList();
+            List<Symbol> expanse = parsingTable.get(opt.get()).production;
+            if (expanse.equals(List.of(Symbol.epsilon)))
+                inputStack.add(0, Symbol.epsilon);
             workingStack.remove(0);
             workingStack.addAll(0, expanse);
             AtomicInteger rightSibling = new AtomicInteger(-1);
