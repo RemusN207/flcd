@@ -19,6 +19,7 @@ public class Grammar {
     private Map<Symbol, Set<Symbol>> follow = null;
     private Map<Map.Entry<Symbol, List<Symbol>>, Integer> productionIndexMap = null;
     private Map<Map.Entry<Symbol, Symbol>, ParsingTableValue> parsingTable = null;
+    private Symbol startingSymbol = new Symbol("");
 
     private Symbol getSymbol(String content) {
         return symbols.get(symbols.indexOf(new Symbol(content)));
@@ -57,6 +58,7 @@ public class Grammar {
             else
                 grammar.readLine(context, line);
         }
+        grammar.startingSymbol = grammar.symbols.stream().filter(symbol -> symbol instanceof NonTerminal).findFirst().get();
         return grammar;
     }
 
@@ -122,7 +124,7 @@ public class Grammar {
         follow = new HashMap<>();
         symbols.stream().filter(symbol -> symbol instanceof NonTerminal)
                 .forEach(nonTerminal -> follow.put(nonTerminal, new HashSet<>()));
-        follow.get(symbols.stream().filter(symbol -> symbol instanceof  NonTerminal).findFirst().get()).add(Symbol.epsilon);
+        follow.get(startingSymbol).add(Symbol.epsilon);
 
         AtomicBoolean convergent = new AtomicBoolean(false);
         while(!convergent.get()) {
@@ -156,7 +158,6 @@ public class Grammar {
                 .flatMap(productions -> productions.getValue().stream()
                         .map(production -> Map.entry(productions.getKey(), production)))
                 .forEach(production -> {
-                    System.out.println(productionIndex + ": " + production);
                     productionIndexMap.put(production, productionIndex.get());
                     productionIndex.addAndGet(1);
                 });
@@ -206,45 +207,42 @@ public class Grammar {
     public ParsingOutput parseInput(List<Symbol> input) {
         if (parsingTable == null)
             generateTable();
-        System.out.println(parsingTable);
         ParsingOutput output = new ParsingOutput();
-        output.addEntry(new ParsingOutputEntry(new NonTerminal("S"), -1, -1));
+        output.addEntry(new ParsingOutputEntry(startingSymbol, -1, -1));
         List<Symbol> inputStack = new ArrayList<>(input);
         inputStack.add(Symbol.endSymbol);
-        List<Symbol> workingStack = new ArrayList<>(List.of(symbols.stream().filter(symbol -> symbol instanceof NonTerminal).findFirst().get(), Symbol.endSymbol));
+        List<Symbol> workingStack = new ArrayList<>(List.of(startingSymbol, Symbol.endSymbol));
         int workingOutputIndex = 0;
 
         while (true) {
-            Optional<Map.Entry<Symbol, Symbol>> opt = parsingTable.keySet().stream()
+            Optional<Map.Entry<Symbol, Symbol>> parsingTableKey = parsingTable.keySet().stream()
                     .filter(key2 -> key2.equals(Map.entry(workingStack.get(0), inputStack.get(0))))
                     .findFirst();
-            if (opt.isEmpty()) {
+            if (parsingTableKey.isEmpty()) {
                 System.out.println("error at " + Map.entry(workingStack.get(0), inputStack.get(0)));
                 return null;
             }
-            if (parsingTable.get(opt.get()).equals(ParsingTableValue.acc))
+            if (parsingTable.get(parsingTableKey.get()).equals(ParsingTableValue.acc))
                 return output;
-            if (parsingTable.get(opt.get()).equals(ParsingTableValue.pop)) {
+            if (parsingTable.get(parsingTableKey.get()).equals(ParsingTableValue.pop)) {
                 inputStack.remove(0);
                 workingStack.remove(0);
                 while (output.getRightSiblingOf(workingOutputIndex) == -1) {
                     workingOutputIndex = output.getEntry(workingOutputIndex).parentIndex;
-                    if (workingOutputIndex == -1)
+                    if (workingOutputIndex == 0)
                         break;
                 }
-                if (workingOutputIndex == -1)
-                    workingOutputIndex = 0;
-                else
+                if (workingOutputIndex != 0)
                     workingOutputIndex = output.getRightSiblingOf(workingOutputIndex);
                 continue;
             }
-            List<Symbol> expanse = parsingTable.get(opt.get()).production;
+            List<Symbol> expanse = parsingTable.get(parsingTableKey.get()).production;
             if (expanse.equals(List.of(Symbol.epsilon)))
                 inputStack.add(0, Symbol.epsilon);
             workingStack.remove(0);
             workingStack.addAll(0, expanse);
-            AtomicInteger rightSibling = new AtomicInteger(-1);
             AtomicInteger workingOutputIndexWrapper = new AtomicInteger(workingOutputIndex);
+            AtomicInteger rightSibling = new AtomicInteger(-1);
             AtomicInteger newWorkingOutputIndex = new AtomicInteger(-1);
             expanse.forEach(symbol -> {
                 rightSibling.set(output.addEntry(new ParsingOutputEntry(symbol, workingOutputIndexWrapper.get(), rightSibling.get())));
