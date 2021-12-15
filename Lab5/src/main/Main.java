@@ -1,7 +1,6 @@
 package main;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,15 +18,19 @@ public class Main {
         }
         return symbols;
     }
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         Grammar g = Grammar.readFromFile("g2.txt");
 
 
         //ParseInputFile("PIF.out");
         //ParseInputFile("seq.out");
+        BufferedWriter fileOutput = new BufferedWriter(new FileWriter("out2.txt"));
+
+        fileOutput.write(g.parseInput(ParseInputFile("PIF.out")).toString());
+        fileOutput.flush();
 
         //System.out.println(g.parseInput(ParseInputFile("seq.txt")));
-        System.out.println(g.parseInput(ParseInputFile("PIF.out")));
+        //System.out.println();
         /*var p = new ParsingOutput();
         p.addEntry(new ParsingOutputEntry(new Terminal("A"), -1, -1));
         p.addEntry(new ParsingOutputEntry(new Terminal("B"), 0, -1));

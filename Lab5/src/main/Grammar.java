@@ -222,6 +222,7 @@ public class Grammar {
                     .filter(key2 -> key2.equals(key))
                     .findFirst();
             if (opt.isEmpty()) {
+                System.out.println("error at " + key);
                 return null;
             }
             if (parsingTable.get(opt.get()).equals(ParsingTableValue.acc))
