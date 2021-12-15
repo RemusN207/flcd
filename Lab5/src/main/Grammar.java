@@ -1,5 +1,8 @@
 package main;
 
+import jdk.swing.interop.SwingInterOpUtils;
+
+import javax.sound.midi.Soundbank;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -198,5 +201,57 @@ public class Grammar {
         putInParsingTable(Symbol.endSymbol, Symbol.endSymbol, ParsingTableValue.acc);
 
         return parsingTable;
+    }
+
+    public ParsingOutput parseInput(List<Symbol> input) {
+        if (parsingTable == null)
+            generateTable();
+        System.out.println(parsingTable);
+        ParsingOutput output = new ParsingOutput();
+        output.addEntry(new ParsingOutputEntry(new NonTerminal("S"), -1, -1));
+        List<Symbol> inputStack = new ArrayList<>(input);
+        inputStack.add(Symbol.endSymbol);
+        List<Symbol> workingStack = new ArrayList<>(List.of(symbols.stream().filter(symbol -> symbol instanceof NonTerminal).findFirst().get(), Symbol.endSymbol));
+        int workingOutputIndex = 0;
+
+        while (true) {
+            System.out.println(inputStack);
+            System.out.println(workingStack);
+            var key = Map.entry(workingStack.get(0), inputStack.get(0));
+            var opt = parsingTable.keySet().stream()
+                    .filter(key2 -> key2.equals(key))
+                    .findFirst();
+            if (opt.isEmpty()) {
+                return null;
+            }
+            if (parsingTable.get(opt.get()).equals(ParsingTableValue.acc))
+                return output;
+            if (parsingTable.get(opt.get()).equals(ParsingTableValue.pop)) {
+                inputStack.remove(0);
+                workingStack.remove(0);
+                while (output.getRightSiblingOf(workingOutputIndex) == -1) {
+                    workingOutputIndex = output.getEntry(workingOutputIndex).parentIndex;
+                    if (workingOutputIndex == -1)
+                        break;
+                }
+                if (workingOutputIndex == -1)
+                    workingOutputIndex = 0;
+                else
+                    workingOutputIndex = output.getRightSiblingOf(workingOutputIndex);
+                continue;
+            }
+            List<Symbol> expanse = parsingTable.get(opt.get()).production.stream().filter(symbol -> !symbol.equals(Symbol.epsilon)).toList();
+            workingStack.remove(0);
+            workingStack.addAll(0, expanse);
+            AtomicInteger rightSibling = new AtomicInteger(-1);
+            AtomicInteger workingOutputIndexWrapper = new AtomicInteger(workingOutputIndex);
+            AtomicInteger newWorkingOutputIndex = new AtomicInteger(-1);
+            expanse.forEach(symbol -> {
+                rightSibling.set(output.addEntry(new ParsingOutputEntry(symbol, workingOutputIndexWrapper.get(), rightSibling.get())));
+                if (newWorkingOutputIndex.get() == -1)
+                    newWorkingOutputIndex.set(rightSibling.get());
+            });
+            workingOutputIndex = newWorkingOutputIndex.get();
+        }
     }
 }

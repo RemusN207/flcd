@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ParsingOutput {
@@ -16,9 +17,18 @@ public class ParsingOutput {
         return entries.size() - 1;
     }
 
+    public int getRightSiblingOf(int index) {
+        Optional<Integer> rightSiblingOptional = entries.stream()
+                .filter(entry -> entry.rightSiblingIndex == index)
+                .map(entries::indexOf)
+                .findFirst();
+        return rightSiblingOptional.orElse(-1);
+    }
+
     public ParsingOutputEntry getEntry(int index) {
         return entries.get(index);
     }
+
 
     @Override
     public String toString() {
