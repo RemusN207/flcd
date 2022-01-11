@@ -51,11 +51,10 @@ program : POUND compoundStatement POUND
 statement : declarationStatement SEMICOLON | assignmentStatement SEMICOLON | ioStatement SEMICOLON | ifStatement SEMICOLON | loopStatement SEMICOLON
 compoundStatement : statement optionalStatement
 optionalStatement : compoundStatement |
-declarationStatement : LET declaration
-declaration : type declaree
+declarationStatement : LET type declaree
+type : INT | BOOL | STRING
 declaree : ID arraySizeDeclaration
 arraySizeDeclaration : OPEN_SQUARE CONST CLOSED_SQUARE |
-type : INT | BOOL | STRING
 assignmentStatement : address ATRIB expression
 address : ID subscription
 subscription : OPEN_SQUARE expression CLOSED_SQUARE |

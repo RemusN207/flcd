@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "y.tab.h"
 int lines = -1;
 int STPosition = 0;
 char ST[100000] = "\n";
@@ -34,64 +35,52 @@ id		[a-zA-Z_][a-zA-Z0-9_]*
 
 %%
 
-"#"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"let"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"bool"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"int"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"string"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"read"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"write"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"if"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"then"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"else"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"for"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"while" 	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
-"do"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"#"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return POUND;}
+"let"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return LET;}
+"bool"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return BOOL;}
+"int"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return INT;}
+"string"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return STRING;}
+"read"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return READ;}
+"write"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return WRITE;}
+"if"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return IF;}
+"then"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return THEN;}
+"else"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return ELSE;}
+"for"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return FOR;}
+"while" 	{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return WHILE;}
+"do"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext); return DO;}
 
-"not"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"and"		{addToPIF(yytext); printf("Operator: %s\n", yytext);}
-"or"		{addToPIF(yytext); printf("Operator: %s\n", yytext);}
+"not"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return NOT;}
+"and"		{addToPIF(yytext); printf("Operator: %s\n", yytext); return AND;}
+"or"		{addToPIF(yytext); printf("Operator: %s\n", yytext); return OR;}
 
-{id}		{addToST(yytext); addToPIF("id"); printf("Identifier: %s\n", yytext);}
-{const} 	{addToST(yytext); addToPIF("const"); printf("Constant: %s\n", yytext );}
+{id}		{addToST(yytext); addToPIF("id"); printf("Identifier: %s\n", yytext); return ID;}
+{const} 	{addToST(yytext); addToPIF("const"); printf("Constant: %s\n", yytext ); return CONST;}
 
-";"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-","		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"{"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"}"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"("		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-")"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"["		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"]"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
-"+"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"-"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"*"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"/"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"%"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"<="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-">="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"!="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"=="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"<"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-">"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
-"="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+";"		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return SEMICOLON;}
+"{"		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return OPEN_CURLY;}
+"}"		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return CLOSED_CURLY;}
+"("		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return OPEN_PARAN;}
+")"		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return CLOSED_PARAN;}
+"["		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return OPEN_SQUARE;}
+"]"		{addToPIF(yytext); printf("Separator: %s\n", yytext ); return CLOSED_SQUARE;}
+"+"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return ADD;}
+"-"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return SUB;}
+"*"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return MUL;}
+"/"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return DIV;}
+"%"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return MOD;}
+"<="		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return LE;}
+">="		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return GE;}
+"!="		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return NE;}
+"=="		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return EQ;}
+"<"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return LT;}
+">"		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return GT;}
+"="		{addToPIF(yytext); printf("Operator: %s\n", yytext ); return ATRIB;}
 
 [ \t]+		{}
 [\n]+ 		{lines++;}
+<<EOF>>	{printf("Symbol Table: %s", ST); printf("Program Internal Form: \n%s", PIF); return 0;}
 		 
 . 		{printf("Illegal token %s at line %d\n", yytext, lines); return -1;}
 
 %% 
 
-int main (argc, argv)
-int argc;
-char **argv;
-{
-    ++argv, --argc;
-    if (argc > 0)
-    yyin = fopen(argv[0], "r");
-    else
-    yyin = stdin;
-    yylex();
-    printf("Symbol Table: %s", ST); printf("\nProgram Internal Form: \n%s", PIF);
-}
