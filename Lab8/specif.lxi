@@ -1,0 +1,97 @@
+%{ 	 
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+int lines = -1;
+int STPosition = 0;
+char ST[100000] = "\n";
+char PIF[100000] = "";
+
+void addToST(char* token){
+    char tokencopy[15] = "\n";
+    strcat(tokencopy, token);
+    strcat(tokencopy, "\n");
+    if(strstr(ST, tokencopy) != 0)
+    	return;
+    strcat(ST, token);
+    strcat(ST, "\n");
+}
+
+void addToPIF(char* token){
+    strcat(PIF, token);
+    strcat(PIF, "\n");
+}
+%} 
+
+%option noyywrap
+%option caseless
+
+STRINGC	\"[a-zA-Z0-9_]*\"
+NUMBER		[+-]?[1-9][0-9]*|0
+BOOLEAN	true|false
+const		{STRINGC}|{NUMBER}|{BOOLEAN}
+id		[a-zA-Z_][a-zA-Z0-9_]*
+
+%%
+
+"#"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"let"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"bool"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"int"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"string"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"read"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"write"	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"if"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"then"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"else"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"for"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"while" 	{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+"do"		{addToPIF(yytext); printf("Reserved word: %s\n", yytext);}
+
+"not"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"and"		{addToPIF(yytext); printf("Operator: %s\n", yytext);}
+"or"		{addToPIF(yytext); printf("Operator: %s\n", yytext);}
+
+{id}		{addToST(yytext); addToPIF("id"); printf("Identifier: %s\n", yytext);}
+{const} 	{addToST(yytext); addToPIF("const"); printf("Constant: %s\n", yytext );}
+
+";"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+","		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"{"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"}"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"("		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+")"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"["		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"]"		{addToPIF(yytext); printf("Separator: %s\n", yytext );}
+"+"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"-"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"*"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"/"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"%"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"<="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+">="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"!="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"=="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"<"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+">"		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+"="		{addToPIF(yytext); printf("Operator: %s\n", yytext );}
+
+[ \t]+		{}
+[\n]+ 		{lines++;}
+		 
+. 		{printf("Illegal token %s at line %d\n", yytext, lines); return -1;}
+
+%% 
+
+int main (argc, argv)
+int argc;
+char **argv;
+{
+    ++argv, --argc;
+    if (argc > 0)
+    yyin = fopen(argv[0], "r");
+    else
+    yyin = stdin;
+    yylex();
+    printf("Symbol Table: %s", ST); printf("\nProgram Internal Form: \n%s", PIF);
+}
